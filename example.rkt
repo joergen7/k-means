@@ -33,7 +33,7 @@
                   run-k-means
                   split)
                   
-         (only-in "k-means-gen-plot.rkt"
+         (only-in "gen-plot.rkt"
                   
                   gen-random-sample
                   plot-gen-sample
