@@ -2,7 +2,7 @@
 
 ## Example
 
-Running `k-means-example.rkt` in DrRacket illustrates how to use this library.
+Running `example.rkt` in DrRacket illustrates how to use this library.
 
 ![k-means-generated-sample](img/k-means-generated-sample.png)
 
