@@ -20,10 +20,6 @@
 
 #lang typed/racket/base
 
-(provide gen-random-sample
-         plot-sample)
-
-
 
 (require (only-in "main.rkt"
 
@@ -33,18 +29,24 @@
                   run-k-means
                   split)
                   
-         (only-in "gen-plot.rkt"
+         (only-in "gen.rkt"
                   
-                  gen-random-sample
-                  plot-gen-sample
-                  plot-sample
-                  plot-history
-                  plot-partition)
+                  gen-random-sample)
+
+         (only-in "render.rkt"
+                  
+                  render-gen-sample
+                  render-sample
+                  render-history
+                  render-partition)
 
          (only-in racket/list
 
                   last
-                  shuffle))
+                  shuffle)
+
+         (only-in plot
+                  plot))
 
 
 ;;----------------------------------------------------------
@@ -60,7 +62,16 @@
 
 ; plot the generated sample
 (displayln "generated sample:")
-(plot-gen-sample gen-data)
+(plot (render-gen-sample gen-data)
+      #:x-min      0
+      #:x-max     10
+      #:y-min      0
+      #:y-max     10
+      #:width    450
+      #:height   450
+      #:x-label  #f
+      #:y-label  #f)
+
 
 ; mix everything together
 (define data : (Listof Point)
@@ -68,7 +79,16 @@
 
 ; plot input data
 (displayln "input data:")
-(plot-sample data)
+(plot (render-sample data)
+      #:x-min      0
+      #:x-max     10
+      #:y-min      0
+      #:y-max     10
+      #:width    450
+      #:height   450
+      #:x-label  #f
+      #:y-label  #f)
+
 
 ; pick initial cluster centers
 (define initial-cc-lst : (Listof Point)
@@ -84,11 +104,28 @@
 
 ; plot cluster center history
 (displayln "history:")
-(plot-history data history)
+(plot (render-history data history)
+      #:x-min      0
+      #:x-max     10
+      #:y-min      0
+      #:y-max     10
+      #:width    450
+      #:height   450
+      #:x-label  #f
+      #:y-label  #f)
 
 ; plot resulting cluster partitioning
 (displayln "partitioning:")
-(plot-partition data (last history))
+(plot (render-partition data (last history))
+      #:x-min      0
+      #:x-max     10
+      #:y-min      0
+      #:y-max     10
+      #:width    450
+      #:height   450
+      #:x-label  #f
+      #:y-label  #f)
+
 
 
 

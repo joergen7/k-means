@@ -20,65 +20,33 @@
 
 #lang typed/racket/base
 
-(provide gen-random-sample
-         plot-gen-sample
-         plot-sample
-         plot-history
-         plot-partition)
+(provide render-gen-sample
+         render-sample
+         render-history
+         render-partition)
 
 (require (only-in "main.rkt"
 
                   Point
-                  
-                  gen-cluster-data
+
                   partition)
          
          (only-in plot
 
                   lines
-                  plot
                   points
                   renderer2d)
          
-         (only-in math/distributions
-                  
-                  sample
-                  uniform-dist)
+
 
          (only-in racket/list
                   last))
 
-(define PLOT-MIN : Real 0)
-(define PLOT-MAX : Real 10)
-(define CLUSTER-CENTER-MIN : Real 1)
-(define CLUSTER-CENTER-MAX : Real 9)
-(define STDDEV-MIN : Nonnegative-Real 0.1)
-(define STDDEV-MAX : Nonnegative-Real 2)
-(define PLOT-SIZE : Exact-Positive-Integer 450)
-
-
-(: gen-random-sample (Exact-Nonnegative-Integer
-                      Exact-Nonnegative-Integer -> (Listof (Listof Point))))
-(define (gen-random-sample k n)
-
-  (define (make-cluster i)
-
-    (define center-point : Point
-      (sample (uniform-dist CLUSTER-CENTER-MIN CLUSTER-CENTER-MAX) 2))
-
-    (define stddev : Positive-Real
-      (assert (sample (uniform-dist STDDEV-MIN STDDEV-MAX)) positive?))
-
-    (gen-cluster-data center-point stddev n))
-
-  
-  (build-list k make-cluster))
 
 
 
-
-(: plot-gen-sample ((Listof (Listof Point)) -> Any))
-(define (plot-gen-sample partition-lst)
+(: render-gen-sample ((Listof (Listof Point)) -> (Listof renderer2d)))
+(define (render-gen-sample partition-lst)
 
   (define k : Exact-Nonnegative-Integer
     (length partition-lst))
@@ -88,38 +56,15 @@
     (points (list-ref partition-lst i)
             #:color (add1 i)))
 
-  (define points-lst : (Listof renderer2d)
-    (build-list k make-points))
+  (build-list k make-points))
 
-  (plot points-lst
-        #:x-min PLOT-MIN
-        #:x-max PLOT-MAX
-        #:y-min PLOT-MIN
-        #:y-max PLOT-MAX
-        #:width PLOT-SIZE
-        #:height PLOT-SIZE
-        #:x-label #f
-        #:y-label #f))
-
-(: plot-sample ((Listof Point) -> Any))
-(define (plot-sample point-lst)
-
-  (define r : renderer2d
-    (points point-lst))
-
-  (plot r
-        #:x-min PLOT-MIN
-        #:x-max PLOT-MAX
-        #:y-min PLOT-MIN
-        #:y-max PLOT-MAX
-        #:width PLOT-SIZE
-        #:height PLOT-SIZE
-        #:x-label #f
-        #:y-label #f))
+(: render-sample ((Listof Point) -> renderer2d))
+(define (render-sample point-lst)
+  (points point-lst))
 
 
-(: plot-partition ((Listof Point) (Listof Point) -> Any))
-(define (plot-partition point-lst cluster-center-lst)
+(: render-partition ((Listof Point) (Listof Point) -> (Listof renderer2d)))
+(define (render-partition point-lst cluster-center-lst)
 
   (define k : Exact-Nonnegative-Integer
     (length cluster-center-lst))
@@ -132,22 +77,11 @@
     (points (list-ref partition-lst i)
             #:color (add1 i)))
   
-  (define points-lst : (Listof renderer2d)
-    (build-list k make-points))
-
-  (plot points-lst
-        #:x-min PLOT-MIN
-        #:x-max PLOT-MAX
-        #:y-min PLOT-MIN
-        #:y-max PLOT-MAX
-        #:width PLOT-SIZE
-        #:height PLOT-SIZE
-        #:x-label #f
-        #:y-label #f))
+  (build-list k make-points))
 
 
-(: plot-history ((Listof Point) (Listof (Listof Point)) -> Any))
-(define (plot-history point-lst history)
+(: render-history ((Listof Point) (Listof (Listof Point)) -> (Listof renderer2d)))
+(define (render-history point-lst history)
 
   (: pivot ((Listof (Listof Point)) -> (Listof (Listof Point))))
   (define (pivot history)
@@ -191,12 +125,4 @@
     (points point-lst
             #:color 'lightgray))
 
-  (plot (cons p (append points-lst lines-lst))
-        #:x-min PLOT-MIN
-        #:x-max PLOT-MAX
-        #:y-min PLOT-MIN
-        #:y-max PLOT-MAX
-        #:width PLOT-SIZE
-        #:height PLOT-SIZE
-        #:x-label #f
-        #:y-label #f))
+  (cons p (append points-lst lines-lst)))
